@@ -1,6 +1,8 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "js_harmony_cms"
 
+require 'rack/mock'
+
 # https://github.com/rails/rails/blob/main/activesupport/lib/active_support/testing/declarative.rb
 module Declarative
   unless defined?(Spec)

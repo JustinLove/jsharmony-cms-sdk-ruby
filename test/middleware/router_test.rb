@@ -1,7 +1,6 @@
 require 'test_helper'
 
 require 'js_harmony_cms/middleware/router'
-require 'rack/mock'
 
 class RouterTest < Minitest::Test
   extend Declarative
