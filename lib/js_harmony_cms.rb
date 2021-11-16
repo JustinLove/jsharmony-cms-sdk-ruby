@@ -109,7 +109,7 @@ class JsHarmonyCms
   # @return [Page, Page::EditorPage] Page Content
   #
   # @example
-  #   @page = cms.get_page("/content/homepage/index.html", request)
+  #   @page = cms.get_page("/homepage/index.html", request)
   def get_page(url, req)
     if is_in_editor?(req)
       Page::EditorPage.new(get_editor_script(req))
