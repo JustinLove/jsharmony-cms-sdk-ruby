@@ -20,6 +20,7 @@ along with this package.  If not, see <http://www.gnu.org/licenses/>.
 require 'rack/request'
 require 'rack/mime'
 require 'json'
+require 'net/http'
 
 class JsHarmonyCms
   module Middleware
@@ -99,6 +100,7 @@ class JsHarmonyCms
       end
 
       # Destination path for redirects.
+      # Depends only on the match type - See {#fully_qualified} for passthru
       # @param path [String] url being processed
       # @param redir [Hash] Redirect rule
       # @return [String] Destination path
@@ -113,6 +115,21 @@ class JsHarmonyCms
         end
       end
 
+      # Ensure passthru urls are fully qualified.
+      # @param url [String] url being processed
+      # @param env [Hash] Rack environment
+      # @return [String] fully qualified url
+      def fully_qualified(url, env)
+        uri = URI(url)
+        return url if uri.scheme
+
+        uri.scheme = env['rack.url_scheme'] if env['rack.url_scheme']
+        uri.host = env['SERVER_NAME'] if env['SERVER_NAME']
+        uri.port = env['SERVER_PORT'] if env['SERVER_PORT']
+
+        uri.to_s
+      end
+
       # Returns a rack response for a redirect response.
       # @param code [Integer] status code
       # @param url [String] url to redirect to
@@ -121,15 +138,17 @@ class JsHarmonyCms
         [code.to_i, {'Location' => url, 'Content-Type' => Rack::Mime.mime_type(::File.extname(url))}, [""]]
       end
 
-      # Continue with standard routing.
+      # Load a remote url and serve it as our own response.
       #
-      # (Extended implementations could perhaps check for fully qualified urls and load a remote file.)
       # @param env [Hash] Rack environment
       # @param url [String] url to redirect to
       # @return [Array(Integer,Hash,Array<String>)] Rack response
       def passthru(env, url)
-        uri = URI(url)
-        @app.call(env.merge({'PATH_INFO' => uri.path, 'QUERY_STRING' => uri.query}))
+        uri = URI(fully_qualified(url, env))
+        res = Net::HTTP.get_response(uri)
+        headers = {}
+        res.each_capitalized { |k, v| headers[k] = v }
+        [res.code.to_i, headers, [res.body]]
       end
 
       private

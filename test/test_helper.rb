@@ -23,6 +23,16 @@ module Declarative
         end
       end
     end
+
+    # Skip the test
+    def xtest(name, &block)
+      test_name = "test_#{name.gsub(/\s+/, '_')}".to_sym
+      defined = method_defined? test_name
+      raise "#{test_name} is already defined in #{self}" if defined
+      define_method(test_name) do
+        skip name
+      end
+    end
   end
 end
 

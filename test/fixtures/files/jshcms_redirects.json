@@ -61,5 +61,19 @@
     "redirect_url_type": "REGEXICASE",
     "redirect_dest": "/regex/case/to/\\1",
     "redirect_http_code": "302"
+  },
+  {
+    "redirect_key": 21,
+    "redirect_url": "/relative",
+    "redirect_url_type": "EXACT",
+    "redirect_dest": "relative_target",
+    "redirect_http_code": "302"
+  },
+  {
+    "redirect_key": 22,
+    "redirect_url": "/remote",
+    "redirect_url_type": "EXACT",
+    "redirect_dest": "http://localhost:3000/random_numbers",
+    "redirect_http_code": "PASSTHRU"
   }
 ]

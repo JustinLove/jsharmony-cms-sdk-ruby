@@ -21,6 +21,18 @@ class RouterTest < Minitest::Test
     Rack::MockRequest.env_for(url, opts)
   end
 
+  test "passthru path - relative" do
+    path = middleware.fully_qualified('/random_numbers', env_for('http://localhost/proxy'))
+
+    assert_equal "http://localhost:80/random_numbers", path
+  end
+
+  test "passthru path - fully qualified" do
+    path = middleware.fully_qualified('https://localhost:3000/random_numbers', env_for('http://localhost/remote'))
+
+    assert_equal "https://localhost:3000/random_numbers", path
+  end
+
   test "unknown url" do
     code, _env, body = middleware.call env_for('http://localhost/some/path')
 
@@ -42,11 +54,18 @@ class RouterTest < Minitest::Test
     assert_equal '/random_numbers', env['Location']
   end
 
-  test "passthru" do
-    code, _env, body = middleware.call env_for('http://localhost/proxy')
+  test "passthru - relative (requires running server)" do
+    code, _env, body = middleware.call env_for('http://localhost:3000/proxy')
 
     assert_equal 200, code
-    assert_equal "/random_numbers", body
+    assert_match "DOCTYPE html", body.first
+  end
+
+  test "passthru - fully qualified (requires running server)" do
+    code, _env, body = middleware.call env_for('http://localhost/remote')
+
+    assert_equal 200, code
+    assert_match "DOCTYPE html", body.first
   end
 
   test "begins" do
@@ -89,5 +108,12 @@ class RouterTest < Minitest::Test
 
     assert_equal 302, code
     assert_equal '/regex/case/to/1', env['Location']
+  end
+
+  test "relative" do
+    code, env, _body = middleware.call env_for('http://localhost/relative')
+
+    assert_equal 302, code
+    assert_equal 'relative_target', env['Location']
   end
 end
