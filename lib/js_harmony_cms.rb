@@ -1,21 +1,4 @@
-=begin
-Copyright 2021 apHarmony
-
-This file is part of jsHarmony.
-
-jsHarmony is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-jsHarmony is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this package.  If not, see <http://www.gnu.org/licenses/>.
-=end
+# (copyright moved to bottom because it was taking over Yard class documentation)
 
 require "js_harmony_cms/version"
 require 'js_harmony_cms/scripting'
@@ -33,6 +16,19 @@ require 'js_harmony_cms/page_loader'
 #   def cms
 #     @cms ||= JsHarmonyCms.new(Rails.configuration.x.jsHarmonyCMS)
 #   end
+#
+# @example Getting a page (Rails controller method)
+#   def page
+#     @page ||= cms.get_page("/#{params[:controller]}/#{params[:action]}.html", request)
+#   end
+#   helper_method :page
+#
+# @example Testing for editor only content (Rails controller method)
+#   def cms_is_in_editor?
+#     cms.is_in_editor?(request)
+#   end
+#   helper_method :cms_is_in_editor?
+
 class JsHarmonyCms
   attr_reader :config
 
@@ -181,3 +177,23 @@ class JsHarmonyCms
     end
   end
 end
+
+
+=begin
+Copyright 2021 apHarmony
+
+This file is part of jsHarmony.
+
+jsHarmony is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+jsHarmony is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this package.  If not, see <http://www.gnu.org/licenses/>.
+=end
