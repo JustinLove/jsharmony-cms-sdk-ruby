@@ -80,11 +80,10 @@ class JsHarmonyCms
     # @return [Array<String>] List of candiate paths
     def self.resolve(content_path, url, url_resolution = UrlResolution.default_document('index.html'))
       uri = URI(url)
-      path = Rack::Utils.unescape_path(uri.path)
-      trailing_slash = uri.path.end_with?('/') # removed by clean_path_info
-      path = Rack::Utils.clean_path_info(path)
+      unsanitized_path = Rack::Utils.unescape_path(uri.path)
+      path = Rack::Utils.clean_path_info(unsanitized_path)
       path = File.join(content_path, path)
-      url_resolution.call(path, trailing_slash)
+      url_resolution.call(path, unsanitized_path)
     end
   end
 end

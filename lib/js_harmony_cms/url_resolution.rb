@@ -25,9 +25,9 @@ class JsHarmonyCms
     # Strict resolution: try the given path and no others
     class Strict
       # @param path [String] Sanitized base path
-      # @param trailing_slash [Boolean] Whether the original path had a trailing slash
+      # @param unsanitized_path [String] Path before cleanup and adding content directory (notably includes trailing slash)
       # @return [Array<String>] Candidate filesystem paths
-      def call(path, trailing_slash)
+      def call(path, unsanitized_path)
         [path]
       end
     end
@@ -42,9 +42,10 @@ class JsHarmonyCms
       end
 
       # @param path [String] Sanitized base path
-      # @param trailing_slash [Boolean] Whether the original path had a trailing slash
+      # @param unsanitized_path [String] Path before cleanup and adding content directory (notably includes trailing slash)
       # @return [Array<String>] Candidate filesystem paths
-      def call(path, trailing_slash)
+      def call(path, unsanitized_path)
+        trailing_slash = unsanitized_path.end_with?('/') # Rack::Utils.clean_path_info
         if trailing_slash
           [File.join(path, default_document)]
         else
