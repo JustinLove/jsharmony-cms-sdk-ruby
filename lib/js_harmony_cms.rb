@@ -19,13 +19,13 @@ require 'js_harmony_cms/page_loader'
 #
 # @example Getting a page (Rails controller method)
 #   def page
-#     @page ||= cms.get_page("/#{params[:controller]}/#{params[:action]}.html", request)
+#     @page ||= cms.get_page("/#{params[:controller]}/#{params[:action]}.html", params)
 #   end
 #   helper_method :page
 #
 # @example Testing for editor only content (Rails controller method)
 #   def cms_is_in_editor?
-#     cms.is_in_editor?(request)
+#     cms.is_in_editor?(params)
 #   end
 #   helper_method :cms_is_in_editor?
 
@@ -72,10 +72,10 @@ class JsHarmonyCms
   end
 
   # Check whether page is currently in CMS Editing Mode
-  # @param req [Rack::Request] Request to pull url parameters from
+  # @param params [Hash{String=>String}] url parameters
   # @return [Boolean] True if page is opened from CMS Editor
-  def is_in_editor?(req)
-    params = (req && req.params) || {}
+  def is_in_editor?(params)
+    params = params || {}
     !!params['jshcms_token']
   end
 
@@ -84,13 +84,13 @@ class JsHarmonyCms
   # * If the page was not launched from the CMS Editor, an empty string will be returned.
   # * The querystring jshcms_url parameter is validated against {#cms_server_urls}.
   # * If the CMS Server is not found in {#cms_server_urls}, an empty string will be returned.
-  # @param req [Rack::Request] Request to pull query parameters from
+  # @param params [Hash{String=>String}] url parameters
   # @return [String] HTML Code to launch the CMS Editor
-  def get_editor_script(req)
-    params = (req && req.params) || {}
+  def get_editor_script(params)
+    params = params || {}
     cms_server_url = params['jshcms_url']
 
-    if is_in_editor?(req) && url_allowed?(cms_server_url)
+    if is_in_editor?(params) && url_allowed?(cms_server_url)
       Scripting.editor_script(cms_server_url)
     else
       ''
@@ -101,14 +101,14 @@ class JsHarmonyCms
   #
   # @param url [String|nil] CMS Page URL.
   #      * Use Full URL or Root-relative URL
-  # @param req [Rack::Request] Request to pull query parameters from
+  # @param params [Hash{String=>String}] url parameters
   # @return [Page, Page::EditorPage] Page Content
   #
   # @example
-  #   @page = cms.get_page("/homepage/index.html", request)
-  def get_page(url, req)
-    if is_in_editor?(req)
-      Page::EditorPage.new(get_editor_script(req))
+  #   @page = cms.get_page("/homepage/index.html", params)
+  def get_page(url, params)
+    if is_in_editor?(params)
+      Page::EditorPage.new(get_editor_script(params))
     else
       load_display_page(url)
     end
